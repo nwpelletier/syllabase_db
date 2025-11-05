@@ -11,12 +11,14 @@ export class PiecesService {
   ) {}
 
   findAll(): Promise<Piece[]> {
-    return this.pieceRepo.find({ relations: ['collection'] });
+    return this.pieceRepo.find({
+      relations: ['collection', 'collection.composer'],
+    });
   }
   findOne(id: number): Promise<Piece | null> {
     return this.pieceRepo.findOne({
       where: { id },
-      relations: ['collection'],
+      relations: ['collection', 'collection.composer'],
     });
   }
 }
