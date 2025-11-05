@@ -2,10 +2,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  OneToMany,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
 import { Composer } from 'src/composers/composer.entity';
+import { Piece } from 'src/pieces/piece.entity';
 
 @Entity({ name: 'collections' })
 export class Collection {
@@ -29,4 +31,7 @@ export class Collection {
   // IMPORTANT: This name has to match the foreign key column in the database
   @JoinColumn({ name: 'composer_id' })
   composer: Composer;
+
+  @OneToMany(() => Piece, (piece) => piece.collection)
+  pieces: Piece[];
 }

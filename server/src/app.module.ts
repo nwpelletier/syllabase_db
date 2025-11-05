@@ -8,6 +8,8 @@ import { ComposersModule } from './composers/composers.module';
 import { Composer } from './composers/composer.entity';
 import { CollectionsModule } from './collections/collections.module';
 import { Collection } from './collections/collection.entity';
+import { PiecesModule } from './pieces/pieces.module';
+import { Piece } from './pieces/piece.entity';
 
 @Module({
   controllers: [AppController],
@@ -31,11 +33,12 @@ import { Collection } from './collections/collection.entity';
         },
         schema: 'public',
         synchronize: false,
-        entities: [Composer, Collection],
+        entities: [Composer, Collection, Piece],
       }),
     }),
     ComposersModule,
     CollectionsModule,
+    PiecesModule,
   ],
 })
 export class AppModule {}
