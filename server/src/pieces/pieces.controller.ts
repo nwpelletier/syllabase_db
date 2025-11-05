@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   InternalServerErrorException,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { PiecesService } from './pieces.service';
 import { Piece } from './piece.entity';
@@ -16,11 +17,23 @@ export class PiecesController {
   constructor(private readonly piecesService: PiecesService) {}
 
   @Get()
-  async getAll(): Promise<Piece[]> {
+  async getAll(
+    @Query('composer') composerName?: string,
+    @Query('collection') collectionName?: string,
+  ): Promise<Piece[]> {
     try {
+      if (composerName || collectionName) {
+        return await this.piecesService.findByComposerAndCollection(
+          composerName,
+          collectionName,
+        );
+      }
       return await this.piecesService.findAll();
     } catch (error) {
-      this.logger.error('Error fetching all pieces', error.stack);
+      this.logger.error(
+        `Error fetching pieces for composer="${composerName}" and collection="${collectionName}"`,
+        error.stack,
+      );
       throw new InternalServerErrorException();
     }
   }

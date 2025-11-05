@@ -21,4 +21,28 @@ export class PiecesService {
       relations: ['collection', 'collection.composer'],
     });
   }
+
+  async findByComposerAndCollection(
+    composerName?: string,
+    collectionName?: string,
+  ): Promise<Piece[]> {
+    const query = this.pieceRepo
+      .createQueryBuilder('piece')
+      .leftJoinAndSelect('piece.collection', 'collection')
+      .leftJoinAndSelect('collection.composer', 'composer');
+
+    if (composerName) {
+      query.andWhere('composer.last_name ILIKE :composerName', {
+        composerName: `%${composerName}%`,
+      });
+    }
+
+    if (collectionName) {
+      query.andWhere('collection.name ILIKE :collectionName', {
+        collectionName: `%${collectionName}%`,
+      });
+    }
+
+    return query.getMany();
+  }
 }

@@ -22,4 +22,18 @@ export class CollectionsService {
       relations: ['composer'],
     });
   }
+
+  async findByComposer(composerName: string): Promise<Collection[]> {
+    const query = this.collectionRepo
+      .createQueryBuilder('collection')
+      .leftJoinAndSelect('collection.composer', 'composer');
+
+    if (composerName) {
+      query.andWhere('composer.last_name ILIKE :composerName', {
+        composerName: `%${composerName}%`,
+      });
+    }
+
+    return query.getMany();
+  }
 }

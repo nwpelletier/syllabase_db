@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   InternalServerErrorException,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { CollectionsService } from './collections.service';
 import { Collection } from './collection.entity';
@@ -17,8 +18,13 @@ export class CollectionsController {
   constructor(private readonly collectionsService: CollectionsService) {}
 
   @Get()
-  async getAll(): Promise<Collection[]> {
+  async getAll(
+    @Query('composer') composerName?: string,
+  ): Promise<Collection[]> {
     try {
+      if (composerName) {
+        return await this.collectionsService.findByComposer(composerName);
+      }
       return await this.collectionsService.findAll();
     } catch (err) {
       this.logger.error('Error fetching all collections', err.stack);
