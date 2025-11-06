@@ -2,14 +2,19 @@ import {
   Controller,
   Get,
   Param,
+  Post,
+  Patch,
+  Delete,
   NotFoundException,
   ParseIntPipe,
   InternalServerErrorException,
   Logger,
   Query,
+  Body,
 } from '@nestjs/common';
 import { CollectionsService } from './collections.service';
 import { Collection } from './collection.entity';
+import { CreateCollectionDto } from './create-collection.dto';
 
 @Controller('collections')
 export class CollectionsController {
@@ -44,5 +49,23 @@ export class CollectionsController {
       this.logger.error(`Error fetching collection with ID ${id}`, err.stack);
       throw new InternalServerErrorException('Failed to fetch collection');
     }
+  }
+
+  @Post()
+  create(@Body() data: CreateCollectionDto): Promise<Collection> {
+    return this.collectionsService.create(data);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: Partial<CreateCollectionDto>,
+  ): Promise<Collection> {
+    return this.collectionsService.update(id, data);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.collectionsService.remove(+id);
   }
 }

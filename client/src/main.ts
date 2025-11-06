@@ -1,6 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { App } from './app/app';
-import { provideRouter, withHashLocation, Routes } from '@angular/router';
+import { provideRouter, Routes } from '@angular/router';
 import 'zone.js';
 
 import { Home } from './app/pages/home/home';
@@ -12,5 +12,5 @@ const routes: Routes = [
 ];
 
 bootstrapApplication(App, {
-  providers: [provideRouter(routes, withHashLocation())],
+  providers: [provideRouter(routes)],
 }).catch((err) => console.error(err));

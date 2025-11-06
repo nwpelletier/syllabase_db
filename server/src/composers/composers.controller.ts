@@ -3,6 +3,8 @@ import {
   Get,
   Param,
   Post,
+  Patch,
+  Delete,
   Body,
   NotFoundException,
 } from '@nestjs/common';
@@ -31,5 +33,15 @@ export class ComposersController {
   @Post()
   create(@Body() data: CreateComposerDto): Promise<Composer> {
     return this.composersService.create(data);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() data: Partial<CreateComposerDto>) {
+    return this.composersService.update(+id, data);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.composersService.remove(+id);
   }
 }

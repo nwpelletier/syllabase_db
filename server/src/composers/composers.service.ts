@@ -1,5 +1,4 @@
-// composer.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Composer } from './composer.entity';
@@ -12,16 +11,36 @@ export class ComposersService {
     private readonly composerRepo: Repository<Composer>,
   ) {}
 
-  findAll() {
-    return this.composerRepo.find();
+  findAll(): Promise<Composer[]> {
+    return this.composerRepo.find({ relations: ['collections'] });
   }
 
-  findOne(id: number) {
-    return this.composerRepo.findOneBy({ id });
+  async findOne(id: number): Promise<Composer> {
+    const composer = await this.composerRepo.findOne({
+      where: { id },
+      relations: ['collections'],
+    });
+    if (!composer) throw new NotFoundException(`Composer ${id} not found`);
+    return composer;
   }
 
-  create(data: CreateComposerDto) {
+  create(data: CreateComposerDto): Promise<Composer> {
     const composer = this.composerRepo.create(data);
     return this.composerRepo.save(composer);
+  }
+
+  async update(
+    id: number,
+    data: Partial<CreateComposerDto>,
+  ): Promise<Composer> {
+    const result = await this.composerRepo.update(id, data);
+    if (result.affected === 0)
+      throw new NotFoundException(`Composer ${id} not found`);
+    return this.findOne(id);
+  }
+
+  async remove(id: number): Promise<Composer> {
+    const composer = await this.findOne(id);
+    return this.composerRepo.remove(composer);
   }
 }

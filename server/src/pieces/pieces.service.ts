@@ -1,13 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Piece } from './piece.entity';
+import { CreatePieceDto } from './create-piece.dto';
+import { Collection } from 'src/collections/collection.entity';
 
 @Injectable()
 export class PiecesService {
   constructor(
     @InjectRepository(Piece)
     private readonly pieceRepo: Repository<Piece>,
+
+    @InjectRepository(Collection)
+    private readonly collectionRepo: Repository<Collection>,
   ) {}
 
   findAll(): Promise<Piece[]> {
