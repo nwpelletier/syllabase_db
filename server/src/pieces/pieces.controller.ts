@@ -1,21 +1,28 @@
 import {
   Controller,
   Get,
+  Post,
+  Put,
+  Delete,
+  Body,
   Param,
-  NotFoundException,
+  Query,
   ParseIntPipe,
+  NotFoundException,
   InternalServerErrorException,
   Logger,
-  Query,
 } from '@nestjs/common';
 import { PiecesService } from './pieces.service';
 import { Piece } from './piece.entity';
+import { CreatePieceDto } from './create-piece.dto';
 
 @Controller('pieces')
 export class PiecesController {
   private readonly logger = new Logger(PiecesController.name);
+
   constructor(private readonly piecesService: PiecesService) {}
 
+  // GET /pieces?composer=...&collection=...
   @Get()
   async getAll(
     @Query('composer') composerName?: string,
@@ -38,6 +45,7 @@ export class PiecesController {
     }
   }
 
+  // GET /pieces/:id
   @Get(':id')
   async getOne(@Param('id', ParseIntPipe) id: number): Promise<Piece> {
     try {
@@ -48,6 +56,42 @@ export class PiecesController {
       return piece;
     } catch (error) {
       this.logger.error(`Error fetching piece with ID ${id}`, error.stack);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  // POST /pieces
+  @Post()
+  async create(@Body() data: CreatePieceDto): Promise<Piece> {
+    try {
+      return await this.piecesService.create(data);
+    } catch (error) {
+      this.logger.error('Error creating piece', error.stack);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  // PUT /pieces/:id
+  @Put(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: Partial<CreatePieceDto>,
+  ): Promise<Piece> {
+    try {
+      return await this.piecesService.update(id, data);
+    } catch (error) {
+      this.logger.error(`Error updating piece with ID ${id}`, error.stack);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  // DELETE /pieces/:id
+  @Delete(':id')
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<Piece> {
+    try {
+      return await this.piecesService.remove(id);
+    } catch (error) {
+      this.logger.error(`Error deleting piece with ID ${id}`, error.stack);
       throw new InternalServerErrorException();
     }
   }

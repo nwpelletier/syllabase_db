@@ -1,5 +1,35 @@
-<h2>Composers List</h2>
+<h2>Pieces List</h2>
 
-<ul>
-  <li *ngFor="let composer of composers">{{ composer.firstName }} {{ composer.lastName }}</li>
-</ul>
+<table border="1" cellpadding="5" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Piece Name</th>
+      <th>Collection Name</th>
+      <th>Catalogue</th>
+      <th>Composer Last Name</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let piece of pieces">
+      <td>
+        <ng-container *ngIf="editingId === piece.id; else viewName">
+          <input [(ngModel)]="editedName" />
+        </ng-container>
+        <ng-template #viewName>{{ piece.name }}</ng-template>
+      </td>
+      <td>{{ piece.collection.name }}</td>
+      <td>{{ getCatalogue(piece.collection) }}</td>
+      <td>{{ piece.collection.composer.lastName }}</td>
+      <td>
+        <ng-container *ngIf="editingId === piece.id; else editBtn">
+          <button (click)="saveEdit(piece)">Save</button>
+          <button (click)="cancelEdit()">Cancel</button>
+        </ng-container>
+        <ng-template #editBtn>
+          <button (click)="startEdit(piece)">Edit</button>
+        </ng-template>
+      </td>
+    </tr>
+  </tbody>
+</table>
